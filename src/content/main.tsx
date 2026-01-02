@@ -39,16 +39,20 @@ export function subscribeRecorder(listener: (state: RecorderState) => void) {
   }
 }
 
-function getReplyEditor(): HTMLElement | null {
+function getActiveEditor(): HTMLElement | null {
   return document.querySelector(
-    'div[data-testid^="tweetTextarea_"][contenteditable="true"]'
+    'div[contenteditable="true"][data-testid^="tweetTextarea_"]'
   )
 }
 
+function getComposerRoot(editor: HTMLElement): HTMLElement | null {
+  return editor.closest('[data-rbd-droppable-id^="composer-"]')
+}
+
 function insertText(text: string) {
-  const editor = getReplyEditor()
+  const editor = getActiveEditor()
   if (!editor) {
-    toast.error('Open the composer first')
+    toast.error('Focus a tweet editor first')
     return
   }
 
@@ -97,28 +101,24 @@ function stopDictation() {
   emit('idle')
 }
 
-function injectMicIntoComposer() {
-  const audienceButton = document.querySelector(
-    'button[aria-label="Choose audience"]'
-  )
+function injectMicNearEditor() {
+  const editor = getActiveEditor()
+  if (!editor) return
 
-  if (!audienceButton) return
+  const composerRoot = getComposerRoot(editor)
+  if (!composerRoot) return
 
-  const container = audienceButton.parentElement
-  if (!container) return
+  if (composerRoot.querySelector(`#${projectName}-mic`)) return
 
-  if (container.querySelector(`#${projectName}-mic`)) return
+  const mount = document.createElement('div')
+  mount.id = `${projectName}-mic`
+  mount.style.marginTop = '6px'
+  mount.style.display = 'flex'
+  mount.style.alignItems = 'center'
 
-  container.style.display = 'flex'
-  container.style.flexDirection = 'row'
-  container.style.gap = '4px'
+  composerRoot.appendChild(mount)
 
-  const reactMount = document.createElement('div')
-  reactMount.id = `${projectName}-mic`
-  container.appendChild(reactMount)
-
-  const root = createRoot(reactMount)
-
+  const root = createRoot(mount)
   root.render(
     <>
       <MicButton
@@ -139,11 +139,9 @@ function injectMicIntoComposer() {
   )
 }
 
-const observer = new MutationObserver(injectMicIntoComposer)
+const observer = new MutationObserver(injectMicNearEditor)
 observer.observe(document.body, { childList: true, subtree: true })
-injectMicIntoComposer()
-
-/* ---------- NEW LOGIC BELOW ---------- */
+injectMicNearEditor()
 
 function isLoggedIn(): boolean {
   return !!document.querySelector('[aria-label="Profile"]')
@@ -155,16 +153,13 @@ function openComposer(): Promise<boolean> {
       'a[data-testid="SideNav_NewTweet_Button"]'
     ) as HTMLElement | null
 
-    if (!postBtn) {
-      resolve(false)
-      return
-    }
+    if (!postBtn) return resolve(false)
 
     postBtn.click()
 
     const start = Date.now()
     const interval = setInterval(() => {
-      const editor = getReplyEditor()
+      const editor = getActiveEditor()
       if (editor) {
         clearInterval(interval)
         editor.focus()
@@ -185,7 +180,10 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     return true
   }
 
-  if (message.type === 'OPEN_COMPOSER_AND_DICTATE' || message.type === 'POST_TWEET') {
+  if (
+    message.type === 'OPEN_COMPOSER_AND_DICTATE' ||
+    message.type === 'POST_TWEET'
+  ) {
     openComposer().then((ok) => {
       if (!ok) {
         sendResponse({ ok: false })
