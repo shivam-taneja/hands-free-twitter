@@ -5,6 +5,28 @@ import { startDictation, stopDictation } from './speech/commands'
 import { getActiveEditor, getComposerRoot } from './twitter/dom'
 
 const PROJECT_NAME = 'HandsFreeTwitter'
+const TOAST_ROOT_ID = `${PROJECT_NAME}-toast-root`
+
+function ensureGlobalToastRoot() {
+  if (document.getElementById(TOAST_ROOT_ID)) return
+
+  const mount = document.createElement('div')
+  mount.id = TOAST_ROOT_ID
+  document.body.appendChild(mount)
+
+  const root = createRoot(mount)
+
+  root.render(
+    <ToastContainer
+      position="bottom-center"
+      autoClose={3000}
+      hideProgressBar
+      closeButton={false}
+      newestOnTop
+      pauseOnHover={false}
+    />
+  )
+}
 
 export function injectMicNearEditor() {
   const editor = getActiveEditor()
@@ -24,29 +46,21 @@ export function injectMicNearEditor() {
   composerRoot.appendChild(mount)
 
   const root = createRoot(mount)
-  root.render(
-    <>
-      <MicButton
-        onToggle={(isActive) => {
-          isActive ? stopDictation() : startDictation()
-        }}
-      />
 
-      <ToastContainer
-        position="bottom-center"
-        autoClose={3000}
-        hideProgressBar
-        closeButton={false}
-        newestOnTop
-        pauseOnHover={false}
-        theme="dark"
-      />
-    </>
+  root.render(
+    <MicButton
+      onToggle={(isActive) => {
+        isActive ? stopDictation() : startDictation()
+      }}
+    />
   )
 }
 
 export function setupObserver() {
+  ensureGlobalToastRoot()
+
   const observer = new MutationObserver(injectMicNearEditor)
   observer.observe(document.body, { childList: true, subtree: true })
+
   injectMicNearEditor()
 }
