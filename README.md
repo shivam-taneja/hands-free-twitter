@@ -39,7 +39,19 @@
 ## Project Structure
 ```
 src/
-├── content/        # Content scripts (Twitter integration)
+├── content/
+│   ├── main.tsx                    # Entry point only
+│   ├── injection.ts                # UI injection logic
+│   ├── speech/
+│   │   ├── recognition.ts          # Speech recognition setup
+│   │   ├── commands.ts             # Voice command parsing
+│   │   └── recorder.ts             # Recorder state management
+│   ├── twitter/
+│   │   ├── dom.ts                  # DOM selectors & queries
+│   │   ├── composer.ts             # Composer operations
+│   │   ├── actions.ts              # Like, reply, retweet actions
+│   │   └── auth.ts                 # Login detection
+│   └── messaging.ts                # Chrome message handling
 ├── popup/          # Extension popup UI
 ├── components/     # Shared React components
 ├── theme/          # Theme and color utilities

@@ -1,4 +1,5 @@
 import { subscribeRecorder } from '@/content/main'
+import { RecorderState } from '@/content/speech/recorder'
 import { useTheme } from '@/theme/useTheme'
 import { useEffect, useState } from 'react'
 import '../popup/index.css'
@@ -8,7 +9,7 @@ type MicButtonProps = {
 }
 
 export function MicButton({ onToggle }: MicButtonProps) {
-  const [state, setState] = useState<'idle' | 'listening'>('idle')
+  const [state, setState] = useState<RecorderState>('idle')
 
   useEffect(() => {
     return subscribeRecorder(setState)

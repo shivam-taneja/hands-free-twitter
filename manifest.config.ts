@@ -23,7 +23,7 @@ export default defineManifest({
     'contentSettings',
   ],
   content_scripts: [{
-    js: ['src/content/main.tsx'],
+    js: ['src/content/main.ts'],
     matches: ["https://twitter.com/*", "https://x.com/*"],
   }],
 })
