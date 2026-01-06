@@ -15,3 +15,21 @@ export function getPostButton(): HTMLElement | null {
 export function getProfileButton(): HTMLElement | null {
   return document.querySelector('[aria-label="Profile"]')
 }
+
+export function getReplyButton(): HTMLButtonElement | null {
+  return document.querySelector<HTMLButtonElement>(
+    'button[data-testid="reply"]'
+  )
+}
+
+export function getRetweetButton(): HTMLButtonElement | null {
+  return document.querySelector<HTMLButtonElement>(
+    'button[data-testid="retweet"], button[data-testid="unretweet"]'
+  )
+}
+
+export function getLikeButton(): HTMLButtonElement | null {
+  return document.querySelector<HTMLButtonElement>(
+    'button[data-testid="like"], button[data-testid="unlike"]'
+  )
+}

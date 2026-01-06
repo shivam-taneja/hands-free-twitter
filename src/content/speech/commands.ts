@@ -1,4 +1,5 @@
 import { toast } from 'react-toastify'
+import { likeCurrentTweet, openReplyAndInsert, retweetCurrent } from '../twitter/actions'
 import { insertText } from '../twitter/composer'
 import { recognition, SpeechRecognitionEvent } from './recognition'
 import { getRecorderState, setRecorderState } from './recorder'
@@ -35,21 +36,23 @@ export function parseVoiceCommand(transcript: string): VoiceCommand | null {
 export function executeCommand(command: VoiceCommand) {
   switch (command.type) {
     case 'like':
+      likeCurrentTweet()
       break
     case 'reply':
       if (command.text) {
+        openReplyAndInsert(command.text)
       } else {
         toast.info('Say "reply [your message]" to compose')
       }
       break
     case 'retweet':
+      retweetCurrent()
       break
     case 'compose':
       insertText(command.text)
       break
   }
 }
-
 export function startDictation() {
   if (getRecorderState() === 'listening') return
 
