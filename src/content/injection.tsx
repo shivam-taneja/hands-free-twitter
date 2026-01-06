@@ -1,6 +1,6 @@
 import { MicButton } from '@/components/MicButton'
+import { ToastRoot } from '@/components/ToastRoot'
 import { createRoot } from 'react-dom/client'
-import { ToastContainer } from 'react-toastify'
 import { startDictation, stopDictation } from './speech/commands'
 import { getActiveEditor, getComposerRoot } from './twitter/dom'
 
@@ -16,16 +16,7 @@ function ensureGlobalToastRoot() {
 
   const root = createRoot(mount)
 
-  root.render(
-    <ToastContainer
-      position="bottom-center"
-      autoClose={3000}
-      hideProgressBar
-      closeButton={false}
-      newestOnTop
-      pauseOnHover={false}
-    />
-  )
+  root.render(<ToastRoot />)
 }
 
 export function injectMicNearEditor() {
