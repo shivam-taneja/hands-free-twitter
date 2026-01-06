@@ -1,4 +1,15 @@
-- [ ] Add commands
-  - [ ] Reply
-  - [ ] Like
-  - [ ] Comment
+- [x] Add commands
+  - [x] Reply
+  - [x] Like
+  - [x] Retweet
+  - [x] Comment
+- [ ] Fix activation logic
+  - [ ] Keyboard shortcut
+  - [ ] Global UI button
+  - [ ] Visual Feedback
+  - [ ] More commands like
+    - [ ] next tweet
+    - [ ] previous tweet
+    - [ ] first tweet
+- [ ] Different listening modes
+  - [ ] Mode selector
